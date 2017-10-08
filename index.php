@@ -1,39 +1,33 @@
 <?php
 
-include_once 'facebook_login_with_php/facebookLogin.php';
-include_once 'login_with_google_using_php/googleLogin.php';
+include_once 'facebook_login/facebookLogin.php';
+include_once 'google_login/googleLogin.php';
 
 
 $loginCallBackUrl = 'http://localhost/oauth/';
 $logoutCallBackUrl = 'http://localhost/oauth/logout.php';
 $output='';
 
-//*********** For Facebook *************
 $facebookEntity = new facebookLogin('1062398260563802','2fb41963fc59c8c67736077e4dae1206');
 $facebookLoginUrl = $facebookEntity->logInUrl($loginCallBackUrl);
+$facebookEntity->login();
 
-//*********** For Google *****************
 $googleEntity = new googleLogin('318179630554-07ft15h4eoqpi0kfs9ov5frinjjtm8u2.apps.googleusercontent.com', 'ympr93J6jbqxN9nkltsSvg_p', 'test', $loginCallBackUrl);
 $googleLoginUrl= $googleEntity->logInUrl($loginCallBackUrl);
-//$googleEntity->logout();
-if(!googleLogin::isLoggedIn() and !facebookLogin::isloggedIn()){
-    $googleEntity->login();
-    $facebookEntity->login();
-}
-
+$googleEntity->login();
 
 //Rendering an output.
-    if(facebookLogin::isloggedIn()){
-        $logoutURL = $facebookEntity->logOutUrl($logoutCallBackUrl);
-        $output = detailProfileHtml( facebookLogin::getUserData(),$logoutURL);
-    }elseif(googleLogin::isLoggedIn()){
-        $logoutURL = $googleEntity->logOutUrl($logoutCallBackUrl);
-        $output = detailProfileHtml( googleLogin::getUserData(),$logoutURL);
-    }else{ // for non login
-        $output = '<a href="'.htmlspecialchars($facebookLoginUrl).'"><img src="images/fblogin-btn.png"></a>';
-        $output = $output. '<a href="'.htmlspecialchars($googleLoginUrl).'"><img src="images/glogin.png"></a>';
-    }
-
+if(facebookLogin::isloggedIn()){
+    $logoutURL = $facebookEntity->logOutUrl($logoutCallBackUrl);
+    $output = detailProfileHtml( facebookLogin::getUserData(),$logoutURL);
+}elseif(googleLogin::isLoggedIn()){
+    $logoutURL = $googleEntity->logOutUrl($logoutCallBackUrl);
+    $output = detailProfileHtml( googleLogin::getUserData(),$logoutURL);
+}else{ // for non login
+    $output = '<a href="'.htmlspecialchars($facebookLoginUrl).'" onClick="clickFacebookLogin()"><img src="images/fblogin-btn.png"></a>';
+    $output .= '<a href="'.htmlspecialchars($googleLoginUrl).'"><img src="images/glogin.png"></a>';
+}
+    
 
 function detailProfileHtml($userData,$logoutURL){
     // Render facebook profile data
