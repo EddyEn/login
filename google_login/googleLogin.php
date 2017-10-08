@@ -51,14 +51,19 @@ class googleLogin
             return true;
         }
         
-        if(isset($_GET['code'])){
-            $this->gClient->authenticate($_GET['code']);
-            $_SESSION['google_access_token'] = $this->gClient->getAccessToken();
-            if (isset($_SESSION['google_access_token'])) {
-                $this->gClient->setAccessToken($_SESSION['google_access_token']);
-                $this->storeUserData();
-                return true;
+        try{
+            if(isset($_GET['code'])){
+                $this->gClient->authenticate($_GET['code']);
+                $_SESSION['google_access_token'] = $this->gClient->getAccessToken();
+                if (isset($_SESSION['google_access_token'])) {
+                    $this->gClient->setAccessToken($_SESSION['google_access_token']);
+                    $this->storeUserData();
+                    return true;
+                }
             }
+        }catch(Exception $e){
+            //echo $e;
+            return false;
         }
         
         return false;
